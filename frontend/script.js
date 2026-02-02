@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const refreshBtn = document.getElementById('refreshBtn');
     const btnText = document.getElementById('btnText');
 
-    // API URL - Update this with your Render backend URL
+    // API URL - change if hosted elsewhere
+    // Production: https://devops-student-event-registration.onrender.com/api
     const API_URL = 'http://localhost:3000/api';
 
     // Handle Form Submission
