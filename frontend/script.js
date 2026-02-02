@@ -3,24 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const formMessage = document.getElementById('formMessage');
     const participantsTableBody = document.querySelector('#participantsTable tbody');
     const refreshBtn = document.getElementById('refreshBtn');
+    const btnText = document.getElementById('btnText');
 
-    // API URL - change if hosted elsewhere
+    // API URL - Update this with your Render backend URL
     const API_URL = 'http://localhost:3000/api';
 
     // Handle Form Submission
     registrationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Disable button to prevent double submit
         const submitBtn = registrationForm.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.innerText;
         submitBtn.disabled = true;
-        submitBtn.innerText = 'Registering...';
+        btnText.innerHTML = '<span class="spinner"></span> Registering...';
 
         const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            contact: document.getElementById('contact').value,
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            contact: document.getElementById('contact').value.trim(),
             event: document.getElementById('event').value
         };
 
@@ -36,22 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                showMessage('success', 'Registration successful!');
+                showMessage('success', '✅ Registration successful!');
                 registrationForm.reset();
-                fetchParticipants(); // Update admin view automatically
+                fetchParticipants();
             } else {
-                showMessage('error', data.error || 'Registration failed. Please try again.');
+                showMessage('error', `❌ ${data.error || 'Registration failed. Please try again.'}`);
             }
         } catch (error) {
             console.error('Error:', error);
-            showMessage('error', 'Network error. Please make sure the backend is running.');
+            showMessage('error', '❌ Network error. Please make sure the backend is running.');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = originalBtnText;
+            btnText.textContent = 'Register Now';
         }
     });
 
-    // Fetch Participants for Admin View
+    // Fetch Participants
     async function fetchParticipants() {
         try {
             const response = await fetch(`${API_URL}/registrations`);
@@ -67,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching participants:', error);
             participantsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="empty-state" style="color: var(--error-color)">
-                        Error connecting to server. Is the backend running?
+                    <td colspan="5" class="empty-state" style="color: var(--error)">
+                        ⚠️ Error connecting to server. Is the backend running?
                     </td>
                 </tr>
             `;
@@ -79,10 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTable(participants) {
         participantsTableBody.innerHTML = '';
 
-        if (participants.length === 0) {
+        if (!participants || participants.length === 0) {
             participantsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="empty-state">No registrations yet.</td>
+                    <td colspan="5" class="empty-state">📭 No registrations yet.</td>
                 </tr>
             `;
             return;
@@ -91,33 +90,29 @@ document.addEventListener('DOMContentLoaded', () => {
         participants.forEach(p => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>#${p.id}</td>
-                <td>${escapeHtml(p.name)}</td>
+                <td class="participant-id">#${p.id}</td>
+                <td class="participant-name">${escapeHtml(p.name)}</td>
                 <td>${escapeHtml(p.email)}</td>
-                <td>${escapeHtml(p.event)}</td>
+                <td><span class="event-badge">${escapeHtml(p.event)}</span></td>
                 <td>${escapeHtml(p.contact)}</td>
             `;
             participantsTableBody.appendChild(row);
         });
     }
 
-    // Helper to prevent XSS
+    // Prevent XSS
     function escapeHtml(text) {
         if (!text) return '';
-        return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
-    // Show Message Helper
+    // Show Message
     function showMessage(type, text) {
         formMessage.textContent = text;
         formMessage.className = `message ${type}`;
 
-        // Hide success message after a few seconds
         if (type === 'success') {
             setTimeout(() => {
                 formMessage.style.display = 'none';
@@ -126,7 +121,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event Listeners
-    refreshBtn.addEventListener('click', fetchParticipants);
+    refreshBtn.addEventListener('click', () => {
+        refreshBtn.textContent = '⏳ Loading...';
+        fetchParticipants();
+        setTimeout(() => {
+            refreshBtn.textContent = '🔄 Refresh';
+        }, 500);
+    });
 
     // Initial Load
     fetchParticipants();
