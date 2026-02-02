@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Event Registration</h1>
+            <p>Register yourself for upcoming events</p>
+        </header>
+
+        <main>
+            <section class="registration-form">
+                <h2>Student Registration</h2>
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact">Contact Number</label>
+                        <input type="tel" id="contact" name="contact" required placeholder="Enter your contact number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event">Select Event</label>
+                        <select id="event" name="event" required>
+                            <option value="" disabled selected>Select an event</option>
+                            <option value="Tech Workshop">Tech Workshop 2026</option>
+                            <option value="Code Hackathon">Code Hackathon</option>
+                            <option value="Cultural Fest">Cultural Fest</option>
+                            <option value="Science Seminar">Science Seminar</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Register Now</button>
+                    <div id="formMessage" class="message"></div>
+                </form>
+            </section>
+
+            <section class="admin-panel">
+                <div class="admin-header">
+                    <h2>Admin Panel</h2>
+                    <button id="refreshBtn" class="btn-secondary">Refresh Data</button>
+                </div>
+                <div class="table-container">
+                    <table id="participantsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Event</th>
+                                <th>Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated here -->
+                            <tr>
+                                <td colspan="5" class="empty-state">No registrations yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
