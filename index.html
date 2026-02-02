@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #64748b;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 0.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        main {
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Common Section Styles */
+        section {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            padding: 0.5rem 1rem;
+            background-color: white;
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f1f5f9;
+            color: var(--text-color);
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Admin Panel Styles */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .admin-header h2 {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-muted);
+            background-color: #f8fafc;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            main {
+                grid-template-columns: 1fr 1.5fr;
+                align-items: start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Event Registration</h1>
+            <p>Register yourself for upcoming events</p>
+        </header>
+
+        <main>
+            <section class="registration-form">
+                <h2>Student Registration</h2>
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact">Contact Number</label>
+                        <input type="tel" id="contact" name="contact" required placeholder="Enter your contact number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event">Select Event</label>
+                        <select id="event" name="event" required>
+                            <option value="" disabled selected>Select an event</option>
+                            <option value="Tech Workshop">Tech Workshop 2026</option>
+                            <option value="Code Hackathon">Code Hackathon</option>
+                            <option value="Cultural Fest">Cultural Fest</option>
+                            <option value="Science Seminar">Science Seminar</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Register Now</button>
+                    <div id="formMessage" class="message"></div>
+                </form>
+            </section>
+
+            <section class="admin-panel">
+                <div class="admin-header">
+                    <h2>Admin Panel</h2>
+                    <button id="refreshBtn" class="btn-secondary">Refresh Data</button>
+                </div>
+                <div class="table-container">
+                    <table id="participantsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Event</th>
+                                <th>Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated here -->
+                            <tr>
+                                <td colspan="5" class="empty-state">No registrations yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registrationForm = document.getElementById('registrationForm');
+            const formMessage = document.getElementById('formMessage');
+            const participantsTableBody = document.querySelector('#participantsTable tbody');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            // API URL - change if hosted elsewhere
+            const API_URL = 'http://localhost:3000/api';
+
+            // Handle Form Submission
+            registrationForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Disable button to prevent double submit
+                const submitBtn = registrationForm.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerText;
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Registering...';
+
+                const formData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    contact: document.getElementById('contact').value,
+                    event: document.getElementById('event').value
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showMessage('success', 'Registration successful!');
+                        registrationForm.reset();
+                        fetchParticipants(); // Update admin view automatically
+                    } else {
+                        showMessage('error', data.error || 'Registration failed. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showMessage('error', 'Network error. Please make sure the backend is running.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalBtnText;
+                }
+            });
+
+            // Fetch Participants for Admin View
+            async function fetchParticipants() {
+                try {
+                    const response = await fetch(`${API_URL}/registrations`);
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+
+                    const participants = await response.json();
+                    renderTable(participants);
+
+                } catch (error) {
+                    console.error('Error fetching participants:', error);
+                    participantsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty-state" style="color: var(--error-color)">
+                        Error connecting to server. Is the backend running?
+                    </td>
+                </tr>
+            `;
+                }
+            }
+
+            // Render Table
+            function renderTable(participants) {
+                participantsTableBody.innerHTML = '';
+
+                if (participants.length === 0) {
+                    participantsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty-state">No registrations yet.</td>
+                </tr>
+            `;
+                    return;
+                }
+
+                participants.forEach(p => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>#${p.id}</td>
+                <td>${escapeHtml(p.name)}</td>
+                <td>${escapeHtml(p.email)}</td>
+                <td>${escapeHtml(p.event)}</td>
+                <td>${escapeHtml(p.contact)}</td>
+            `;
+                    participantsTableBody.appendChild(row);
+                });
+            }
+
+            // Helper to prevent XSS
+            function escapeHtml(text) {
+                if (!text) return '';
+                return text
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            // Show Message Helper
+            function showMessage(type, text) {
+                formMessage.textContent = text;
+                formMessage.className = `message ${type}`;
+
+                // Hide success message after a few seconds
+                if (type === 'success') {
+                    setTimeout(() => {
+                        formMessage.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            // Event Listeners
+            refreshBtn.addEventListener('click', fetchParticipants);
+
+            // Initial Load
+            fetchParticipants();
+        });
+    </script>
+</body>
+
+</html>
